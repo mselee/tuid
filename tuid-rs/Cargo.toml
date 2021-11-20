@@ -1,0 +1,31 @@
+[package]
+name = "tuid"
+version = "0.0.0"
+edition = "2021"
+license = "MPL-2.0"
+readme = "README.md"
+authors = ["Mohamed Seleem <oss@mselee.com>"]
+description = "Sequential UUID generator"
+keywords = ["tuid", "uuid", "guid", "sequential", "identifier"]
+repository = "https://github.com/mselee/tuid/blob/master/tuid-rs"
+rust-version = "1.57"
+include = [
+    "**/*.rs",
+    "LICENSE",
+    "README.md",
+    "Cargo.toml",
+]
+
+[features]
+default = ["fastrand", "uuid", "hex", "coarse"]
+coarse = ["coarsetime"]
+approx = ["coarse"]
+hex = ["faster-hex", "bstr"]
+full = ["default", "approx"]
+
+[dependencies]
+fastrand = { version = "^1.5", default_features = false, optional = true }
+uuid = { version = "^0.8", default_features = false,  optional = true }
+coarsetime = { version = "^0.1", default_features = false, optional = true }
+bstr = { version = "^0.2", optional = true }
+faster-hex = {version = "0.6.1", optional = true }

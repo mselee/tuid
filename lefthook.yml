@@ -1,0 +1,30 @@
+##
+## Copyright (c) 2021 Mohamed Seleem.
+##
+## This file is part of tuid-rs.
+## See https://github.com/mselee/tuid for further info.
+##
+## This Source Code Form is subject to the terms of the Mozilla Public
+## License, v. 2.0. If a copy of the MPL was not distributed with this
+## file, You can obtain one at https://mozilla.org/MPL/2.0/.
+##
+pre-push:
+  parallel: true
+  commands:
+    commits:
+      run: just commits
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      run: just lint --all
+    audit:
+      run: just audit
+    test:
+      run: just test
+    copyright:
+      run: just copyright --check
+commit-msg:
+  commands:
+    check-commit-msg:
+      run: just commit-msg {1}

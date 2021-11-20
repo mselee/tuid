@@ -1,0 +1,7 @@
+[workspace]
+members = ["tuid-rs", "tuid-bench", "tuid-examples"]
+exclude = ["tuid-py"]
+default-members = ["tuid-rs"]
+
+[profile.bench]
+lto = "fat"

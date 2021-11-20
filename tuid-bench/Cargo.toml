@@ -1,0 +1,25 @@
+[package]
+name = "tuid-bench"
+version = "0.0.0"
+edition = "2021"
+license = "MPL-2.0"
+publish = false
+
+[dev-dependencies]
+criterion = "^0.3"
+tuid = { path = "../tuid-rs" }
+rand = "^0.8"
+nanorand = "^0.6"
+fastrand = "^1.5"
+
+[[bench]]
+name    = "encoding"
+harness = false
+
+[[bench]]
+name    = "rngs"
+harness = false
+
+[[bench]]
+name    = "uuid"
+harness = false

@@ -1,0 +1,15 @@
+style = "conventional"
+ignore_author_re = "dependabot"
+allowed_types = [
+  "build",
+  "ci",
+  "docs",
+  "feat",
+  "fix",
+  "perf",
+  "refactor",
+  "style",
+  "test",
+  "chore",
+  "revert",
+]

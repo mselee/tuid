@@ -1,0 +1,48 @@
+[changelog]
+# changelog header
+header = """
+# Changelog
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+"""
+# template for the changelog body
+# https://tera.netlify.app/docs/#introduction
+body = """
+{% if version %}\
+    ## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else %}\
+    ## [unreleased]
+{% endif %}\
+{% for group, commits in commits | group_by(attribute="group") %}
+    ### {{ group | upper_first }}
+    {% for commit in commits %}
+        - {{ commit.message | upper_first }}\
+    {% endfor %}
+{% endfor %}\n
+"""
+# remove the leading and trailing whitespaces from the template
+trim = true
+
+[git]
+# allow only conventional commits
+# https://www.conventionalcommits.org
+conventional_commits = true
+# regex for parsing and grouping commits
+commit_parsers = [
+  { message = "^feat.*: add", group = "Added"},
+  { message = "^feat.*: support", group = "Added"},
+  { message = "^feat.*: remove", group = "Removed"},
+  { message = "^feat.*: delete", group = "Removed"},
+  { message = "^feat.*: fix", group = "Fixed"},
+  { message = "^fix", group = "Fixed"},
+  { message = "^feat", group = "Changed"},
+  { message = "^perf", group = "Changed"},
+]
+# filter out the commits that are not matched by commit parsers
+filter_commits = true
+# glob pattern for matching git tags
+tag_pattern = "v[0-9]*"
+# regex for skipping tags
+skip_tags = "v0.1.0-beta.1"

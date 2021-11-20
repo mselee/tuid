@@ -1,0 +1,10 @@
+max_width = 120
+comment_width = 100
+match_block_trailing_comma = true
+wrap_comments = true
+error_on_line_overflow = true
+imports_granularity = "Crate"
+group_imports = "StdExternalCrate"
+version = "Two"
+# report_fixme = "Unnumbered"
+# report_todo = "Unnumbered"
