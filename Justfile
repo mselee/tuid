@@ -1,8 +1,5 @@
 set dotenv-load := false
 
-channel := "beta"
-export RUSTUP_TOOLCHAIN := channel
-
 CR_YEAR := "2021"
 CR_NAME := "Mohamed Seleem"
 CR_REPO := "https://github.com/mselee/tuid"
@@ -18,8 +15,8 @@ CR_PROJ := "tuid"
 	pipx install git+https://github.com/mselee/licenseheaders.git
 	rustup update
 	rustup component add clippy
-	rustup +nightly component add rustfmt
-	rustup +nightly component add miri
+	rustup component add rustfmt
+	rustup component add miri
 	cargo install cargo-audit cargo-criterion committed cargo-release git-cliff cargo-release
 	lefthook install
 
@@ -27,23 +24,23 @@ CR_PROJ := "tuid"
 	cargo audit
 
 @bench *args:
-	cargo +nightly criterion -p tuid-bench {{args}}
+	cargo criterion -p tuid-bench {{args}}
 
 @clean:
 	cargo clean
 
 @lint *args:
 	cargo clippy {{args}}
-	cargo +nightly fmt --check {{args}}
+	cargo fmt --check {{args}}
 
 @fmt *args:
-	cargo +nightly fmt {{args}}
+	cargo fmt {{args}}
 
 @fix *args:
 	cargo clippy --fix {{args}}
 
 @test *args='--no-default-features --features fastrand':
-	cargo +nightly test -p tuid {{args}}
+	cargo test -p tuid {{args}}
 
 @copyright *args:
 	just _do_copyright tuid {{args}}

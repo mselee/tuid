@@ -14,42 +14,37 @@ pub fn update() {
     coarsetime::Instant::update();
 }
 
-#[cfg(feature = "approx")]
+#[cfg(all(not(test), feature = "approx"))]
 pub fn updater(ms: u64) -> coarsetime::Updater {
     coarsetime::Updater::new(ms)
 }
 
-#[cfg(not(feature = "coarse"))]
+#[cfg(all(not(test), not(feature = "coarse"), not(feature = "coarse")))]
 #[inline]
 pub(crate) fn since(epoch: u64) -> u64 {
-    now()
+    std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap()
         .as_secs()
         .wrapping_add(epoch)
 }
 
-#[cfg(all(feature = "coarse", not(feature = "approx")))]
+#[cfg(all(not(test), feature = "coarse", not(feature = "approx")))]
 #[inline]
 pub(crate) fn since(epoch: u64) -> u64 {
     coarsetime::Clock::now_since_epoch().as_secs().wrapping_add(epoch)
 }
 
-#[cfg(feature = "approx")]
+#[cfg(all(not(test), feature = "approx"))]
 #[inline]
 pub(crate) fn since(epoch: u64) -> u64 {
     coarsetime::Clock::recent_since_epoch().as_secs().wrapping_add(epoch)
 }
 
-#[cfg(all(not(feature = "coarse"), not(test)))]
-#[inline]
-fn now() -> std::time::SystemTime {
-    std::time::SystemTime::now()
-}
-
 #[cfg(test)]
-fn now() -> std::time::SystemTime {
-    use std::{ops::Add, time::Duration};
-
-    std::time::SystemTime::UNIX_EPOCH.add(Duration::from_secs(1519211809934 + (60 * 100)))
+#[inline]
+pub(crate) fn since(epoch: u64) -> u64 {
+    std::time::Duration::from_secs(1519211809934 + (60 * 100))
+        .as_secs()
+        .wrapping_add(epoch)
 }

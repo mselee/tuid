@@ -49,19 +49,39 @@ const fn make_masks(prefix: u8) -> (u64, u64) {
 }
 
 pub trait Configuration {
-    const __PERIOD_MIN__: u64 = 1;
-    const __PERIOD_MAX__: u64 = 4096;
-    const __PERIOD__: u64 = 64;
-    const __OFFSET__: u64 = 0;
-    const __PREFIX__: u8 = 16;
+    const PERIOD_MIN: u64 = 1;
+    const PERIOD_MAX: u64 = 4096;
+    const PERIOD: u64 = 64;
+    const OFFSET: u64 = 0;
+    const PREFIX: u8 = 16;
+}
 
-    const __MASKS__: (u64, u64) = make_masks(Self::__PREFIX__);
-    const PERIOD: u64 = make_period(Self::__PERIOD__, Self::__PERIOD_MIN__, Self::__PERIOD_MAX__);
-    const OFFSET: u64 = Self::__OFFSET__;
-    const TIME_MASK: u64 = Self::__MASKS__.0;
-    const RAND_MASK: u64 = Self::__MASKS__.1;
-    const PREFIX: usize = Self::__PREFIX__ as usize;
-    const WRAPAROUND: Duration = Duration::from_secs(Self::PERIOD * 2u64.pow(Self::PREFIX as u32));
+pub const fn period<C: Configuration>() -> u64 {
+    make_period(C::PERIOD, C::PERIOD_MIN, C::PERIOD_MAX)
+}
+
+pub const fn masks<C: Configuration>() -> (u64, u64) {
+    make_masks(prefix::<C>())
+}
+
+pub const fn offset<C: Configuration>() -> u64 {
+    C::OFFSET
+}
+
+pub const fn time_mask<C: Configuration>() -> u64 {
+    masks::<C>().0
+}
+
+pub const fn rand_mask<C: Configuration>() -> u64 {
+    masks::<C>().1
+}
+
+pub const fn prefix<C: Configuration>() -> u8 {
+    C::PREFIX
+}
+
+pub const fn wraparound<C: Configuration>() -> Duration {
+    Duration::from_secs(period::<C>() * 2u64.pow(prefix::<C>() as u32))
 }
 
 pub struct DefaultConfig;
@@ -75,6 +95,6 @@ mod tests {
 
     #[test]
     fn test_wraparound() {
-        assert_eq!(DefaultConfig::WRAPAROUND.as_secs(), 4194304);
+        assert_eq!(wraparound::<DefaultConfig>().as_secs(), 4194304);
     }
 }

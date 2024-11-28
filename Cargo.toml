@@ -2,6 +2,7 @@
 members = ["tuid-rs", "tuid-bench", "tuid-examples"]
 exclude = ["tuid-py"]
 default-members = ["tuid-rs"]
+resolver = "2"
 
 [profile.bench]
 lto = "fat"

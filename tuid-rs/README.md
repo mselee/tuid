@@ -1,15 +1,18 @@
 # tuid-rs
+Sequential UUID generator.
+
+This generator uses a time-based component as the shared prefix.
+The prefix is non-monotonic, and wraps around every once in a while to achieve a dense key space.
 
 ## Installation
-
 If using [cargo-edit](https://github.com/killercup/cargo-edit)
 ```shell
 cargo add tuid
 ```
 or add it yourself to `Cargo.toml`
 ```toml
-[dependencies.tuid]
-version = "0.1"
+[dependencies]
+tuid = "0.1.0-alpha"
 ```
 
 ## Usage
@@ -23,5 +26,3 @@ fn main() {
   let hex = tid.as_hex();
 }
 ```
-
----

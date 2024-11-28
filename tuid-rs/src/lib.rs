@@ -10,15 +10,15 @@
  */
 #![forbid(unsafe_code)]
 pub mod config;
-pub mod gen;
+mod core;
+#[cfg(feature = "fastrand")]
+pub mod generator;
 pub mod time;
 
-#[cfg(feature = "bstr")]
-pub use bstr;
-#[cfg(feature = "bstr")]
-use bstr::BString;
 #[cfg(feature = "uuid")]
 pub use uuid;
+
+pub use core::{default, new, once, unchecked};
 
 pub type Bytes = [u8; 16];
 
@@ -35,16 +35,16 @@ impl Tuid {
 #[cfg(feature = "hex")]
 impl Tuid {
     #[inline]
-    pub fn as_hex(&self) -> BString {
+    pub fn as_hex(&self) -> Result<bstr::BString, faster_hex::Error> {
         let mut bytes: [u8; 32] = [0; 32];
-        faster_hex::hex_encode(&self.0, &mut bytes).unwrap();
-        BString::from(&bytes[..])
+        faster_hex::hex_encode(&self.0, &mut bytes)?;
+        Ok(bstr::BString::from(bytes))
     }
 
     #[inline]
-    pub fn from_hex(value: &str) -> Result<Self, faster_hex::Error> {
+    pub fn from_hex<'a, T: Into<&'a [u8]>>(value: T) -> Result<Self, faster_hex::Error> {
         let mut bytes = Bytes::default();
-        faster_hex::hex_decode(value.as_bytes(), &mut bytes)?;
+        faster_hex::hex_decode(value.into(), &mut bytes)?;
         Ok(bytes.into())
     }
 }

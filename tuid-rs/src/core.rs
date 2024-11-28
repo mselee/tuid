@@ -8,16 +8,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
-#[cfg(feature = "fastrand")]
-pub use self::fast::Fast;
 use crate::{
     config::{Configuration, DefaultConfig},
     time::since,
     Tuid,
 };
-
-#[cfg(feature = "fastrand")]
-mod fast;
 
 const U64WIDTH: usize = std::mem::size_of::<u64>();
 
@@ -37,21 +32,21 @@ pub fn new<C: Configuration>(r1: u64, r2: u64) -> Tuid {
     unchecked(
         r1,
         r2,
-        C::OFFSET,
-        C::PERIOD,
-        C::PREFIX as u32,
-        C::TIME_MASK,
-        C::RAND_MASK,
+        crate::config::offset::<C>(),
+        crate::config::period::<C>(),
+        crate::config::prefix::<C>(),
+        crate::config::time_mask::<C>(),
+        crate::config::rand_mask::<C>(),
     )
 }
 
 #[inline]
-pub fn unchecked(r1: u64, r2: u64, offset: u64, period: u64, prefix: u32, time_mask: u64, rand_mask: u64) -> Tuid {
+pub fn unchecked(r1: u64, r2: u64, offset: u64, period: u64, prefix: u8, time_mask: u64, rand_mask: u64) -> Tuid {
     let ts = since(offset) / period;
     let time_bits = ts & time_mask;
     let rand_bits = r1 & rand_mask;
     let r1 = rand_bits | time_bits;
-    let pos = prefix;
+    let pos = prefix as u32;
 
     (if cfg!(target_endian = "little") {
         gen_le(pos, r1, r2)
@@ -80,14 +75,15 @@ pub const fn gen_be(pos: u32, r1: u64, r2: u64) -> u128 {
 mod tests {
     use super::*;
 
-    fn xkcd() -> Tuid {
-        default(4u64, 4u64)
-    }
-
     #[test]
     fn test_tuid_gen() {
-        let rng = fastrand::Rng::with_seed(0);
-        let id = default(rng.u64(..), rng.u64(..));
-        assert_eq!(&id.0[..DefaultConfig::PREFIX / 8], [82, 143]);
+        let mut rng = fastrand::Rng::with_seed(0);
+        let x1 = rng.u64(..);
+        let x2 = rng.u64(..);
+        let id = default(x1, x2);
+        assert_eq!(
+            &id.0[..crate::config::prefix::<DefaultConfig>() as usize / 8],
+            [82, 143]
+        );
     }
 }

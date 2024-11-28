@@ -10,37 +10,38 @@
  */
 use std::marker::PhantomData;
 
+use fastrand::Rng;
+
 use crate::{
     config::{Configuration, DefaultConfig},
-    gen, Tuid,
+    Tuid,
 };
 
-pub struct Fast<C: Configuration> {
+pub struct Generator<C: Configuration> {
+    rng: Rng,
     config: PhantomData<C>,
-    rng: fastrand::Rng,
 }
 
-impl<C: Configuration> Fast<C> {
-    pub fn new(rng: fastrand::Rng) -> Self {
+impl<C: Configuration> Generator<C> {
+    pub fn new(rng: Rng) -> Self {
         Self {
-            config: PhantomData,
             rng,
+            config: PhantomData,
         }
     }
-
-    #[inline]
-    pub fn tuid(&self) -> Tuid {
-        gen::new::<C>(self.rng.u64(..), self.rng.u64(..))
-    }
 }
 
-impl Default for Fast<DefaultConfig> {
+impl Default for Generator<DefaultConfig> {
     fn default() -> Self {
-        let rng = fastrand::Rng::default();
-        Self {
-            config: PhantomData,
-            rng,
-        }
+        Self::new(Rng::default())
+    }
+}
+
+impl<C: Configuration> Iterator for Generator<C> {
+    type Item = Tuid;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        Some(crate::new::<C>(self.rng.u64(..), self.rng.u64(..)))
     }
 }
 
@@ -50,8 +51,8 @@ mod tests {
 
     #[test]
     fn test_fast_builder() {
-        let builder = Fast::default();
+        let mut generator = Generator::default();
 
-        let _ = builder.tuid();
+        let _ = generator.next();
     }
 }
